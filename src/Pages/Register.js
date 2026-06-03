@@ -12,64 +12,105 @@ import {
   Divider
 } from "@mui/material";
 
+
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
 export default function RegisterPage() {
 
   const navigate = useNavigate();
-
+  const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     firstName: "",
-    lastName: "",
-    role: "",   
+    lastName: "",  
     email: "",
     password: "",
     confirmPassword: ""
-  });
+        });
+      const handleChange = (e) => {
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
-  };
+        setForm({
+          ...form,
+          [e.target.name]: e.target.value
+        });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+        setErrors((prev) => ({
+          ...prev,
+          [e.target.name]: ""
+        }));
 
-    try {
-
-    
-      if (form.password !== form.confirmPassword) {
-        alert("Passwords do not match");
-        return;
-      }
-
-      
-      const payload = {
-        firstName: form.firstName,
-        lastName: form.lastName,
-        role: form.role,
-        email: form.email,
-        password: form.password
       };
+   const validateForm = () => {
 
-      const response = await Registration(payload);
+        let newErrors = {};
 
-      console.log(response);
+        if (!form.firstName.trim())
+          newErrors.firstName = "First name is required";
 
-      
-      navigate("/login");
+        if (!form.lastName.trim())
+          newErrors.lastName = "Last name is required";
 
-    } catch (error) {
-      console.error(error);
+        if (!form.email.trim())
+          newErrors.email = "Email address is required";
 
-      alert(
-        error.response?.data?.message ||
-        "Registration failed"
-      );
-    }
-  };
+        else if (
+          !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(form.email)
+        )
+          newErrors.email = "Invalid email address";
+
+        if (!form.password)
+          newErrors.password = "Password is required";
+
+        else if (form.password.length < 6)
+          newErrors.password =
+            "Password must be at least 6 characters";
+
+        if (!form.confirmPassword)
+          newErrors.confirmPassword =
+            "Confirm password is required";
+
+        else if (form.password !== form.confirmPassword)
+          newErrors.confirmPassword =
+            "Passwords do not match";
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+
+      };
+        const handleSubmit = async (e) => {
+          e.preventDefault();
+
+          try {
+
+          
+           if (!validateForm())
+             return;
+
+            
+            const payload = {
+              firstName: form.firstName,
+              lastName: form.lastName,
+              role: form.role,
+              email: form.email,
+              password: form.password
+            };
+
+            const response = await Registration(payload);
+
+            console.log(response);
+
+            
+            navigate("/login");
+
+          } catch (error) {
+            console.error(error);
+
+            alert(
+              error.response?.data?.message ||
+              "Registration failed"
+            );
+          }
+        };
 
   return (
     <Box
@@ -147,71 +188,63 @@ export default function RegisterPage() {
                   gap: 2
                 }}
               >
-
                 <TextField
                   name="firstName"
                   label="First Name"
                   value={form.firstName}
                   onChange={handleChange}
+                  error={!!errors.firstName}
+                  helperText={errors.firstName}
                   fullWidth
-                  required
-                />
+                />  
 
                 <TextField
                   name="lastName"
                   label="Last Name"
                   value={form.lastName}
                   onChange={handleChange}
+                  error={!!errors.lastName}
+                  helperText={errors.lastName}
                   fullWidth
-                  required
                 />
 
               </Box>
-
-              {/* EMAIL */}
-              <TextField
+                <TextField
                 type="email"
                 name="email"
                 label="Email Address"
                 value={form.email}
                 onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
                 fullWidth
-                required
               />
 
               <Divider />
 
-              {/* ROLE (optional but FIXED) */}
-              <TextField
-                name="role"
-                label="Role (User/Admin)"
-                value={form.role}
-                onChange={handleChange}
-                fullWidth
-                required
-              />
-
               {/* PASSWORD */}
-              <TextField
-                type="password"
-                name="password"
-                label="Password"
-                value={form.password}
-                onChange={handleChange}
-                fullWidth
-                required
-              />
+           <TextField
+              type="password"
+              name="password"
+              label="Password"
+              value={form.password}
+              onChange={handleChange}
+              error={!!errors.password}
+              helperText={errors.password}
+              fullWidth
+            />
 
               {/* CONFIRM PASSWORD */}
-              <TextField
-                type="password"
-                name="confirmPassword"
-                label="Confirm Password"
-                value={form.confirmPassword}
-                onChange={handleChange}
-                fullWidth
-                required
-              />
+           <TextField
+              type="password"
+              name="confirmPassword"
+              label="Confirm Password"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              error={!!errors.confirmPassword}
+              helperText={errors.confirmPassword}
+              fullWidth
+            />
 
               {/* BUTTON */}
               <Button

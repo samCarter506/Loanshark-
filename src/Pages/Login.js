@@ -7,7 +7,8 @@ import {
   Box,
   Typography,
   Alert,
-  Divider
+  Divider,
+  CircularProgress
 } from "@mui/material";
 
 import LockOpenIcon from "@mui/icons-material/LockOpen";
@@ -35,7 +36,18 @@ export default function Login() {
     password: ""
   });
 
+  const [errors, setErrors] = useState({});
+
   const [error, setError] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  const fieldSx = {
+    "& .MuiOutlinedInput-root": {
+      borderRadius: 3,
+      backgroundColor: "#fff"
+    }
+  };
 
   const handleChange = (e) => {
 
@@ -44,39 +56,103 @@ export default function Login() {
       [e.target.name]: e.target.value
     });
 
+    setErrors((prev) => ({
+      ...prev,
+      [e.target.name]: ""
+    }));
+
+    setError("");
+
+  };
+
+  const validateForm = () => {
+
+    let newErrors = {};
+
+    if (!form.email.trim()) {
+
+      newErrors.email =
+        "Email address is required";
+
+    }
+    else if (
+      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(form.email)
+    ) {
+
+      newErrors.email =
+        "Invalid email address";
+
+    }
+
+    if (!form.password) {
+
+      newErrors.password =
+        "Password is required";
+
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+
   };
 
   const handleSubmit = async (e) => {
 
     e.preventDefault();
 
+    if (!validateForm())
+      return;
+
     try {
+
+      setLoading(true);
 
       setError("");
 
       // LOGIN
       await LoginUser(form);
 
-      // GET USER
+      // GET CURRENT USER
       const user =
         await GetCurrentUser();
 
-      console.log(user);
+      console.log("Logged in user:", user);
 
       // SAVE USER
       setUser(user);
 
-      // REDIRECT
-      navigate("/");
+      // ROLE BASED REDIRECT
+      if (user?.role === "Admin") {
 
-    } catch (err) {
+        navigate("/application");
 
-      console.log(err);
+      }
+      else if (user?.role === "User") {
+
+        navigate("/application/apply");
+
+      }
+      else {
+
+        navigate("/");
+
+      }
+
+    }
+    catch (err) {
+
+      console.error(err);
 
       setError(
         err.response?.data?.message ||
-        "Login failed"
+        "Invalid email or password"
       );
+
+    }
+    finally {
+
+      setLoading(false);
 
     }
 
@@ -178,7 +254,7 @@ export default function Login() {
               }}
             >
 
-              {/* ERROR */}
+              {/* SERVER ERROR */}
               {error && (
 
                 <Alert
@@ -199,13 +275,10 @@ export default function Login() {
                 label="Email Address"
                 value={form.email}
                 onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
                 fullWidth
-                required
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 3
-                  }
-                }}
+                sx={fieldSx}
               />
 
               {/* PASSWORD */}
@@ -215,13 +288,10 @@ export default function Login() {
                 label="Password"
                 value={form.password}
                 onChange={handleChange}
+                error={!!errors.password}
+                helperText={errors.password}
                 fullWidth
-                required
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 3
-                  }
-                }}
+                sx={fieldSx}
               />
 
               <Divider />
@@ -232,6 +302,7 @@ export default function Login() {
                 variant="contained"
                 fullWidth
                 size="large"
+                disabled={loading}
                 sx={{
                   py: 1.5,
                   borderRadius: 3,
@@ -248,7 +319,14 @@ export default function Login() {
                   }
                 }}
               >
-                Sign In
+                {loading ? (
+                  <CircularProgress
+                    size={24}
+                    color="inherit"
+                  />
+                ) : (
+                  "Sign In"
+                )}
               </Button>
 
               {/* REGISTER LINK */}
@@ -256,7 +334,7 @@ export default function Login() {
                 textAlign="center"
                 color="text.secondary"
               >
-                Don&apos;t have an account?{" "}
+                Don't have an account?{" "}
 
                 <Typography
                   component={Link}
