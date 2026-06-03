@@ -17,34 +17,27 @@ import {
   Assignment,
   Logout,
   Person,
-  FactCheck,
   Settings
 } from "@mui/icons-material";
 
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../Hocks/AuthContext";
-
 import { LogoutUser } from "../../Services/AccountApi";
 
 export default function Header() {
 
   const navigate = useNavigate();
-
   const { user, setUser } = useAuth();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-
   const open = Boolean(anchorEl);
 
   // ============================
   // ROLE CHECKS
   // ============================
-  const isAdmin =
-    user?.roles?.includes("Admin");
-
-  const isUser =
-    user?.roles?.includes("User");
+  const isAdmin = user?.roles?.includes("Admin");
+  const isUser = user?.roles?.includes("User");
 
   // ============================
   // MENU
@@ -63,44 +56,28 @@ export default function Header() {
   const handleLogout = async () => {
 
     setUser(null);
-
     localStorage.removeItem("access_token");
 
-    await LogoutUser();
+    try {
+      await LogoutUser();
+    } catch (error) {
+      console.log("Logout error:", error);
+    }
 
     navigate("/login");
   };
 
   return (
-
-    <AppBar
-      position="static"
-      sx={{
-        backgroundColor: "#1976d2"
-      }}
-    >
+    <AppBar position="static" sx={{ backgroundColor: "#1976d2" }}>
 
       <Toolbar>
 
         {/* LOGO */}
-        <Typography
-          variant="h6"
-          sx={{
-            flexGrow: 1,
-            fontWeight: 700
-          }}
-        >
+        <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
           Loan Shark System
         </Typography>
 
-        {/* NAVIGATION */}
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            alignItems: "center"
-          }}
-        >
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
 
           {/* APPLICATIONS */}
           <Button
@@ -112,7 +89,7 @@ export default function Header() {
             Applications
           </Button>
 
-          {/* APPLY */}
+          {/* APPLY - USER ONLY */}
           {isUser && (
             <Button
               color="inherit"
@@ -123,20 +100,16 @@ export default function Header() {
               Apply
             </Button>
           )}
-          
+
           {/* AUDIT - ADMIN ONLY */}
-          {user?.role === "Admin" && (
-         <Button
-             color="inherit"
-             component={Link}
-             to="/audit"
-         >
-          Audit
-        </Button>
+          {isAdmin && (
+            <Button color="inherit" component={Link} to="/audit">
+              Audit
+            </Button>
           )}
 
           {/* SYSTEM CODE - ADMIN ONLY */}
-          {user?.role === "Admin" && (
+          {isAdmin && (
             <Button
               color="inherit"
               component={Link}
@@ -148,7 +121,7 @@ export default function Header() {
           )}
 
           {/* SYSTEM CODE DETAILS - ADMIN ONLY */}
-          {user?.role === "Admin" && (
+          {isAdmin && (
             <Button
               color="inherit"
               component={Link}
@@ -160,20 +133,13 @@ export default function Header() {
           )}
 
           {/* PROFILE */}
-          <IconButton
-            onClick={handleMenu}
-            color="inherit"
-          >
+          <IconButton onClick={handleMenu} color="inherit">
             <Avatar>
               {user?.firstName?.charAt(0) || "U"}
             </Avatar>
           </IconButton>
 
-          <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-          >
+          <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
 
             <MenuItem
               component={Link}
@@ -194,7 +160,6 @@ export default function Header() {
         </Box>
 
       </Toolbar>
-
     </AppBar>
   );
 }

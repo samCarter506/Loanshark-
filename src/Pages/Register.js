@@ -1,12 +1,7 @@
-import * as React from "react";
-
-import { useState } from "react";
+import React, { useState } from "react";
 
 import { Registration } from "../Services/AccountApi";
-import {
-  useNavigate,
-  Link
-} from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import {
   Paper,
@@ -20,71 +15,70 @@ import {
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
 export default function RegisterPage() {
+
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
-    Role: "",
+    role: "",   
     email: "",
     password: "",
     confirmPassword: ""
   });
 
   const handleChange = (e) => {
-
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
-
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     try {
 
-      // PASSWORD CHECK
+    
       if (form.password !== form.confirmPassword) {
-
         alert("Passwords do not match");
-
         return;
-
       }
 
-      // API
-      const response = await Registration(form);
+      
+      const payload = {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        role: form.role,
+        email: form.email,
+        password: form.password
+      };
+
+      const response = await Registration(payload);
 
       console.log(response);
 
-      alert("User registered successfully");
+      
+      navigate("/login");
 
     } catch (error) {
-
       console.error(error);
 
       alert(
         error.response?.data?.message ||
         "Registration failed"
       );
-
     }
-
   };
 
   return (
-
     <Box
       sx={{
         minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background:
-          "linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)",
+        background: "linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)",
         p: 2
       }}
     >
@@ -96,7 +90,7 @@ export default function RegisterPage() {
           maxWidth: 450,
           borderRadius: 5,
           overflow: "hidden",
-          backgroundColor: "#ffffff",
+          backgroundColor: "#fff",
           border: "1px solid #e2e8f0",
           boxShadow: "0 20px 40px rgba(0,0,0,0.15)"
         }}
@@ -107,8 +101,7 @@ export default function RegisterPage() {
           sx={{
             p: 4,
             textAlign: "center",
-            background:
-              "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+            background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
             color: "#fff"
           }}
         >
@@ -126,59 +119,31 @@ export default function RegisterPage() {
               mb: 2
             }}
           >
-
-            <PersonAddAlt1Icon
-              sx={{
-                fontSize: 35
-              }}
-            />
-
+            <PersonAddAlt1Icon sx={{ fontSize: 35 }} />
           </Box>
 
-          <Typography
-            variant="h4"
-            fontWeight={700}
-          >
+          <Typography variant="h4" fontWeight={700}>
             Create Account
           </Typography>
 
-          <Typography
-            variant="body1"
-            sx={{
-              mt: 1,
-              opacity: 0.9
-            }}
-          >
+          <Typography variant="body1" sx={{ mt: 1, opacity: 0.9 }}>
             Register to access Loan Shark System
           </Typography>
 
         </Box>
 
         {/* FORM */}
-        <Box
-          sx={{
-            p: 4
-          }}
-        >
+        <Box sx={{ p: 4 }}>
 
           <form onSubmit={handleSubmit}>
 
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 2.5
-              }}
-            >
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
 
               {/* FIRST + LAST NAME */}
               <Box
                 sx={{
                   display: "grid",
-                  gridTemplateColumns: {
-                    xs: "1fr",
-                    sm: "1fr 1fr"
-                  },
+                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
                   gap: 2
                 }}
               >
@@ -190,11 +155,6 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   fullWidth
                   required
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: 3
-                    }
-                  }}
                 />
 
                 <TextField
@@ -204,11 +164,6 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   fullWidth
                   required
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: 3
-                    }
-                  }}
                 />
 
               </Box>
@@ -222,14 +177,19 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 fullWidth
                 required
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 3
-                  }
-                }}
               />
 
               <Divider />
+
+              {/* ROLE (optional but FIXED) */}
+              <TextField
+                name="role"
+                label="Role (User/Admin)"
+                value={form.role}
+                onChange={handleChange}
+                fullWidth
+                required
+              />
 
               {/* PASSWORD */}
               <TextField
@@ -240,11 +200,6 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 fullWidth
                 required
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 3
-                  }
-                }}
               />
 
               {/* CONFIRM PASSWORD */}
@@ -256,11 +211,6 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 fullWidth
                 required
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 3
-                  }
-                }}
               />
 
               {/* BUTTON */}
@@ -269,59 +219,32 @@ export default function RegisterPage() {
                 variant="contained"
                 fullWidth
                 size="large"
-                sx={{
-                  mt: 1,
-                  py: 1.5,
-                  borderRadius: 3,
-                  textTransform: "none",
-                  fontSize: "1rem",
-                  fontWeight: 700,
-                  boxShadow: "none",
-                  background:
-                    "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-                  "&:hover": {
-                    boxShadow: "none",
-                    background:
-                      "linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%)"
-                  }
-                }}
               >
                 Create Account
               </Button>
-   {/* login LINK */}
-              <Typography
-                textAlign="center"
-                color="text.secondary"
-              >
-                Don&apos;t have an account?{" "}
 
+              {/* LOGIN LINK */}
+              <Typography textAlign="center" color="text.secondary">
+                Already have an account?{" "}
                 <Typography
                   component={Link}
                   to="/login"
                   sx={{
                     color: "#2563eb",
                     fontWeight: 700,
-                    textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "underline"
-                    }
+                    textDecoration: "none"
                   }}
                 >
                   Login
                 </Typography>
-
               </Typography>
 
             </Box>
-
           </form>
 
         </Box>
 
       </Paper>
-
     </Box>
-
   );
-
 }
