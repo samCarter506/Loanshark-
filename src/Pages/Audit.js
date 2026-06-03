@@ -160,7 +160,7 @@ export default function Audit() {
               backgroundColor: '#f5f5f5',
               fontWeight: 'bold',
             },
-          }}
+          }} 
         />
       </Paper>
     </Box>
