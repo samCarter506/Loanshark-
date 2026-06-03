@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   //
-  baseURL:"https://loansharkapi-1.onrender.com",
+  baseURL:"https://loansharkapi.onrender.com/api",
   withCredentials: true,
 });
 
