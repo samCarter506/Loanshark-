@@ -38,7 +38,7 @@ export default function Header() {
   // ============================
   const isAdmin = user?.roles?.includes("Admin");
   const isUser = user?.roles?.includes("User");
-
+  console.log(isAdmin)
   // ============================
   // MENU
   // ============================
@@ -102,14 +102,14 @@ export default function Header() {
           )}
 
           {/* AUDIT - ADMIN ONLY */}
-          {isAdmin && (
+          {user?.role === "Admin" && (
             <Button color="inherit" component={Link} to="/audit">
               Audit
             </Button>
           )}
 
           {/* SYSTEM CODE - ADMIN ONLY */}
-          {isAdmin && (
+          {user?.role === "Admin" && (
             <Button
               color="inherit"
               component={Link}
@@ -121,7 +121,7 @@ export default function Header() {
           )}
 
           {/* SYSTEM CODE DETAILS - ADMIN ONLY */}
-          {isAdmin && (
+          {user?.role === "Admin" && (
             <Button
               color="inherit"
               component={Link}

@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
 
-    fetch("https://localhost:7001/api/auth/me", {
+    fetch("https://loansharkapi.onrender.com/api/auth/me", {
       credentials: "include"
     })
       .then(res => {
