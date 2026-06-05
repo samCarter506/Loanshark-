@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-
 import {
   Box,
   Button,
@@ -15,16 +14,17 @@ import {
   Stack,
   Avatar,
   TextField,
-  MenuItem
-} from '@mui/material';
-
+  MenuItem,
+  Snackbar,
+  Alert
+} from "@mui/material";
 import {
   Visibility,
   Edit,
-  Person,
-  AccountBalance
-} from '@mui/icons-material';
-
+  PictureAsPdf,
+  Image,
+  Description
+} from "@mui/icons-material";
 import { DataGrid } from '@mui/x-data-grid';
 
 import { GetApplications, UpdateLoan } from '../Services/ApplicationApi';
@@ -32,18 +32,26 @@ import { GetApplications, UpdateLoan } from '../Services/ApplicationApi';
 import { useTheme } from '@mui/material/styles';
 
 export default function Applications() {
+
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [rows, setRows] = useState([]);
   const [statusDialog, setStatusDialog] = useState(false);
   const [detailsDialog, setDetailsDialog] = useState(false);
+  const [documentDialog, setDocumentDialog] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState(null);
 
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success"
+  });
   const [updateData, setUpdateData] = useState({
-  status: '',
-  interestRate: '',
-  loanTermMonths: ''
+    status: '',
+    interestRate: '',
+    loanTermMonths: ''
 
-});
+  });
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -67,16 +75,50 @@ export default function Applications() {
     }
   };
   const handleUpdateLoan = async () => {
-  try {
-    await UpdateLoan(selectedRow.id, updateData);
 
-    fetchApplications();
+    try {
 
-    handleCloseDialogs();
-  } catch (error) {
-    console.error(error);
-  }
-};
+      await UpdateLoan(
+        selectedRow.id,
+        updateData
+      );
+
+      setSnackbar({
+        open: true,
+        message: "Loan updated successfully",
+        severity: "success"
+      });
+
+      await fetchApplications();
+
+      handleCloseDialogs();
+
+    } catch (error) {
+
+      console.error(error);
+
+      setSnackbar({
+        open: true,
+        message: "Failed to update loan",
+        severity: "error"
+      });
+    }
+  };
+  const handleViewDocument = (doc) => {
+
+    setSelectedDocument(doc);
+
+    setDocumentDialog(true);
+
+  };
+
+  const handleCloseDocument = () => {
+
+    setSelectedDocument(null);
+
+    setDocumentDialog(false);
+
+  };
 
   const handleView = (row) => {
     setSelectedRow(row);
@@ -97,15 +139,15 @@ export default function Applications() {
   };
 
   const handleOpenDetailsDialog = () => {
-  setUpdateData({
-    status: selectedRow?.status || '',
-    interestRate: selectedRow?.interestRate || '',
-    loanTermMonths: selectedRow?.loanTermMonths || '',
-    monthlyPayment: selectedRow?.monthlyPayment || ''
-  });
+    setUpdateData({
+      status: selectedRow?.status || '',
+      interestRate: selectedRow?.interestRate || '',
+      loanTermMonths: selectedRow?.loanTermMonths || '',
+      monthlyPayment: selectedRow?.monthlyPayment || ''
+    });
 
-  setDetailsDialog(true);
-};
+    setDetailsDialog(true);
+  };
 
   const handleCloseDialogs = () => {
     setStatusDialog(false);
@@ -137,36 +179,79 @@ export default function Applications() {
     return `R ${Number(value).toLocaleString()}`;
   };
 
-  const DocumentItem = ({ doc }) => (
-    <Paper
-      variant="outlined"
-      sx={{
-        p: 2,
-        borderRadius: 3,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        mb: 1
-      }}
-    >
-      <Box>
-        <Typography fontWeight={600}>
-          {doc.documentType}
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          {doc.fileName}
-        </Typography>
-      </Box>
+  const DocumentItem = ({ doc }) => {
 
-      <Button
-        size="small"
+    const extension =
+      doc.fileName
+        ?.split(".")
+        .pop()
+        ?.toLowerCase();
+
+    const isPdf =
+      extension === "pdf";
+
+    const isImage =
+      ["jpg", "jpeg", "png", "gif", "webp"]
+        .includes(extension);
+
+    return (
+
+      <Paper
         variant="outlined"
-        onClick={() => window.open(doc.filePath, '_blank')}
+        sx={{
+          p: 2,
+          borderRadius: 3,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 1
+        }}
       >
-        View
-      </Button>
-    </Paper>
-  );
+
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+        >
+
+          {isPdf ? (
+            <PictureAsPdf color="error" />
+          ) : isImage ? (
+            <Image color="primary" />
+          ) : (
+            <Description />
+          )}
+
+          <Box>
+
+            <Typography fontWeight={600}>
+              {doc.documentType}
+            </Typography>
+
+            <Typography
+              variant="caption"
+              color="text.secondary"
+            >
+              {doc.fileName}
+            </Typography>
+
+          </Box>
+
+        </Stack>
+
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() =>
+            handleViewDocument(doc)
+          }
+        >
+          View
+        </Button>
+
+      </Paper>
+    );
+  };
 
   const DetailItem = ({ label, value }) => (
     <Box>
@@ -312,7 +397,7 @@ export default function Applications() {
               {/* PERSONAL */}
               <Paper sx={{ p: 3 }}>
                 <Typography fontWeight={700} mb={2}>
-                   Personal Information
+                  Personal Information
                 </Typography>
 
                 <Grid container spacing={2}>
@@ -353,7 +438,7 @@ export default function Applications() {
               {/* LOAN */}
               <Paper sx={{ p: 3 }}>
                 <Typography fontWeight={700} mb={2}>
-                Loan Details
+                  Loan Details
                 </Typography>
 
                 <Grid container spacing={2}>
@@ -361,12 +446,12 @@ export default function Applications() {
                     <DetailItem label="Amount" value={formatCurrency(selectedRow.amount)} />
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    <DetailItem label="Interest rate%" value={selectedRow.interestRate}  />
+                    <DetailItem label="Interest rate%" value={selectedRow.interestRate} />
                   </Grid>
                   <Grid item xs={12} md={6}>
                     <DetailItem label="Loan Term" value={selectedRow.loanTermMonths} />
                   </Grid>
-                  
+
                   <Grid item xs={12} md={6}>
                     <DetailItem label="Status" value={selectedRow.status} />
                   </Grid>
@@ -477,6 +562,117 @@ export default function Applications() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog
+        open={documentDialog}
+        onClose={handleCloseDocument}
+        fullWidth
+        maxWidth="lg"
+      >
+        <DialogTitle>
+          {selectedDocument?.fileName}
+        </DialogTitle>
+
+        <DialogContent>
+
+          {selectedDocument && (() => {
+
+            const extension =
+              selectedDocument.fileName
+                ?.split(".")
+                .pop()
+                ?.toLowerCase();
+
+            const isPdf =
+              extension === "pdf";
+
+            const isImage =
+              [
+                "jpg",
+                "jpeg",
+                "png",
+                "gif",
+                "webp"
+              ].includes(extension);
+
+            if (isPdf) {
+
+              return (
+                <iframe
+                  src={selectedDocument.filePath}
+                  title="PDF Preview"
+                  width="100%"
+                  height="700px"
+                  style={{
+                    border: "none"
+                  }}
+                />
+              );
+            }
+
+            if (isImage) {
+
+              return (
+                <Box
+                  component="img"
+                  src={selectedDocument.filePath}
+                  alt={selectedDocument.fileName}
+                  sx={{
+                    width: "100%",
+                    maxHeight: 700,
+                    objectFit: "contain"
+                  }}
+                />
+              );
+            }
+
+            return (
+
+              <Box sx={{ py: 4 }}>
+
+                <Typography>
+                  Preview not available.
+                </Typography>
+
+                <Button
+                  href={selectedDocument.filePath}
+                  target="_blank"
+                  variant="contained"
+                  sx={{ mt: 2 }}
+                >
+                  Open Document
+                </Button>
+
+              </Box>
+            );
+
+          })()}
+
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={handleCloseDocument}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() =>
+          setSnackbar({
+            ...snackbar,
+            open: false
+          })
+        }
+      >
+        <Alert
+          severity={snackbar.severity}
+          variant="filled"
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

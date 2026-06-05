@@ -6,10 +6,13 @@ import {
   TextField,
   Typography,
   Grid,
+  Snackbar,
+  Alert,
   Paper,
   LinearProgress
 } from "@mui/material";
 
+import { useNavigate } from "react-router-dom";
 
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
@@ -17,7 +20,8 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import { CreateApplication } from "../Services/ApplicationApi";
 
 export default function Apply() {
-
+  const navigate = useNavigate();
+  const [successOpen, setSuccessOpen] = React.useState(false);
   const [activeStep, setActiveStep] = React.useState(0);
 
   const [loading, setLoading] = React.useState(false);
@@ -235,6 +239,13 @@ export default function Apply() {
       const result = await CreateApplication(formData);
 
       console.log(result);
+
+      setSuccessOpen(true);
+
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
 
     }
     catch (error) {
@@ -835,7 +846,23 @@ export default function Apply() {
         </Box>
 
       </Paper>
-
+      <Snackbar
+        open={successOpen}
+        autoHideDuration={2000}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center"
+        }}
+        onClose={() => setSuccessOpen(false)}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Application submitted successfully!
+        </Alert>
+      </Snackbar>
     </Box>
 
   );

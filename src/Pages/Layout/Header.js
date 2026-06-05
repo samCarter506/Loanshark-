@@ -36,9 +36,9 @@ export default function Header() {
   // ============================
   // ROLE CHECKS
   // ============================
-  const isAdmin = user?.roles?.includes("Admin");
-  const isUser = user?.roles?.includes("User");
-  console.log(isAdmin)
+  const isAdmin = user?.role.includes("Admin");
+
+  
   // ============================
   // MENU
   // ============================
@@ -72,10 +72,36 @@ export default function Header() {
 
       <Toolbar>
 
-        {/* LOGO */}
-        <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
-          Loan Shark System
-        </Typography>
+        <Box
+  component={Link}
+  to="/"
+  sx={{
+    flexGrow: 1,
+    display: "flex",
+    alignItems: "center",
+    textDecoration: "none",
+    color: "inherit",
+    cursor: "pointer"
+  }}
+>
+  <img
+    src="/stock-vector-loan-shark-61564879.png"
+    alt="Loan Shark"
+    style={{
+      height: 45,
+      marginRight: 10
+    }}
+  />
+
+  <Typography
+    variant="h6"
+    sx={{
+      fontWeight: 700
+    }}
+  >
+    Loan Shark System
+  </Typography>
+</Box>
 
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
 
@@ -90,7 +116,7 @@ export default function Header() {
           </Button>
 
           {/* APPLY - USER ONLY */}
-          {isUser && (
+          
             <Button
               color="inherit"
               component={Link}
@@ -99,7 +125,7 @@ export default function Header() {
             >
               Apply
             </Button>
-          )}
+          
 
           {/* AUDIT - ADMIN ONLY */}
           {user?.role === "Admin" && (
@@ -109,7 +135,7 @@ export default function Header() {
           )}
 
           {/* SYSTEM CODE - ADMIN ONLY */}
-          {user?.role === "Admin" && (
+          {isAdmin && (
             <Button
               color="inherit"
               component={Link}
@@ -121,7 +147,7 @@ export default function Header() {
           )}
 
           {/* SYSTEM CODE DETAILS - ADMIN ONLY */}
-          {user?.role === "Admin" && (
+          {isAdmin && (
             <Button
               color="inherit"
               component={Link}
