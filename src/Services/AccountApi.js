@@ -9,7 +9,7 @@ export const LoginUser = async (user) => {
     "/auth/signin",
     user
   );
-
+console.log(response.data)
   return response.data;
 };
 

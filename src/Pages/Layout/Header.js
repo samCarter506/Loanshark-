@@ -36,7 +36,7 @@ export default function Header() {
   // ============================
   // ROLE CHECKS
   // ============================
-  const isAdmin = user?.role.includes("Admin");
+  const isAdmin = user?.role === "Admin";
 
   
   // ============================

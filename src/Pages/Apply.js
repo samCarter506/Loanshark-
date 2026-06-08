@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../Hocks/AuthContext";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 
@@ -25,9 +25,10 @@ export default function Apply() {
   const [activeStep, setActiveStep] = React.useState(0);
 
   const [loading, setLoading] = React.useState(false);
-
+  const { user, setUser } = useAuth();
   const [errors, setErrors] = React.useState({});
-
+  const isAdmin = user?.role === "Admin";
+  console.log("admin at apply: ",isAdmin)
   const [form, setForm] = React.useState({
 
     // PERSONAL

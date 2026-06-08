@@ -5,37 +5,43 @@ import {
   useState
 } from "react";
 
+import api from '../Services/api';
+
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
 
   const [user, setUser] = useState(null);
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
 
-    fetch("https://loansharkapi.onrender.com/api/auth/me", {
-      credentials: "include"
-    })
-      .then(res => {
+    const getCurrentUser = async () => {
+      try {
 
-        if (!res.ok)
-        {
-          throw new Error();
-        }
+        const response =
+          await api.get("/auth/me", {
+            withCredentials: true
+          });
+        console.log("==============")
+        console.log(response.data);
 
-        return res.json();
-      })
-      .then(data => {
-        setUser(data);
-      })
-      .catch(() => {
+        setUser(response.data);
+
+      } catch (error) {
+
+        console.error(error);
+
         setUser(null);
-      })
-      .finally(() => {
+
+      } finally {
+
         setLoading(false);
-      });
+
+      }
+    };
+
+    getCurrentUser();
 
   }, []);
 
