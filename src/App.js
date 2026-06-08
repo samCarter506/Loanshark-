@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import MainLayout from "./Pages/Layout/MainLayout";
 
@@ -31,8 +31,14 @@ function App() {
       {/* ========================= */}
       {/* PUBLIC ROUTES */}
       {/* ========================= */}
-
-      
+      <Route
+        path="*"
+        element={<Navigate to="/" replace />}
+      />
+      <Route
+        path="/"
+        element={<LoanLandingPage />}
+      />
 
       <Route
         path="/login"
@@ -73,10 +79,7 @@ function App() {
             </RoleRoute>
           }
         />
-        <Route
-        path="/"
-        element={<LoanLandingPage />}
-      />
+
 
         {/* ADMIN ONLY */}
         <Route
@@ -106,7 +109,7 @@ function App() {
             </RoleRoute>
           }
         />
-       
+
 
         {/* USER + ADMIN */}
         <Route
@@ -117,7 +120,7 @@ function App() {
             </RoleRoute>
           }
         />
-          <Route
+        <Route
           path="/checkstatus"
           element={
             <RoleRoute allowedRoles={["User", "Admin"]}>
