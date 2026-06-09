@@ -119,45 +119,6 @@ export default function LoanLandingPage() {
                   Check Status
                 </Button>
 
-                <Button
-                  variant="outlined"
-                  size="large"
-                  onClick={() =>
-                    navigate("/login")
-                  }
-                  sx={{
-                    borderRadius: 3,
-                    px: 4,
-                    py: 1.5,
-                    textTransform: "none",
-                    color: "#fff",
-                    borderColor: "#fff"
-                  }}
-                >
-                  Login
-                </Button>
-
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={() =>
-                    navigate("/register")
-                  }
-                  sx={{
-                    borderRadius: 3,
-                    px: 4,
-                    py: 1.5,
-                    textTransform: "none",
-                    fontWeight: 700,
-                    bgcolor: "#22c55e",
-                    "&:hover": {
-                      bgcolor: "#16a34a"
-                    }
-                  }}
-                >
-                  Register
-                </Button>
-
               </Stack>
 
             </Grid>
@@ -300,7 +261,7 @@ export default function LoanLandingPage() {
             Everything you need for a smooth loan experience.
           </Typography>
 
-          <Grid container spacing={7} sx={{Margin:5},{marginBottom:5}}>
+          <Grid container spacing={7} sx={{Margin:5}}>
 
             {[
               {
