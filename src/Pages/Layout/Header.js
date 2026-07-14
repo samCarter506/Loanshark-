@@ -68,7 +68,7 @@ export default function Header() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#1976d2" }}>
+    <AppBar position="static" sx={{ backgroundColor: "#1976d2", marginTop:0 }}>
 
       <Toolbar>
 

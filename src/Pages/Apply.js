@@ -547,7 +547,7 @@ export default function Apply() {
                 sx={{
                   p: 3,
                   borderRadius: 4,
-                  backgroundColor: "#f8fafc",
+                  backgroundColor: "#4681bd",
                   border: "1px solid #e2e8f0"
                 }}
               >
